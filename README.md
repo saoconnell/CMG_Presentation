@@ -11,10 +11,8 @@ Objective:
 - How can this be applied to Capacity and Performance Analysis
 - Example: Utilization Profiling in R
 
-Files:
-
 File                            | Description
--------------------------------   -----------------------------------------------
+------------------------------- |  -----------------------------------------------
 CMG_Presenation.pdf 			| PDF File with the presentation slides
 CMG_Presenation.tex 			| Latex file to create the presentation
 CMG_Presentation_Outline.odt 	| OpenOffice file with a detailed outline of the presentation and the demo
