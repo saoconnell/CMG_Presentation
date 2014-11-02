@@ -9,7 +9,7 @@ Machine Learning, Capacity and Performance Analysis, and R
 Objective:
 - Brief Introduction to Machine Learning and Data Mining
 - How can this be applied to Capacity and Performance Analysis
-- Example: Utilization Profiling in R
+- Example: Utilization Profiling in R, Using Support Vector Machines (SVM) for pattern recognition 
 
 File                            | Description
 ------------------------------- |  -----------------------------------------------
