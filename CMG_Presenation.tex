@@ -1,0 +1,1055 @@
+%
+%  CMG_Presentation.tex
+%
+%  Created by Stephen OConnell on 2011-05-02
+% 
+%
+%%% CREATE DOCUMENT AS A FLAT DOCUMENT, FOR HANDOUTS
+%\documentclass[xcolor=dvipsnames, 9pt, handout]{beamer}
+%%% CREATE DOCUMENT FOR DOING PRESENTATIONS
+\documentclass[xcolor=dvipsnames, 9pt]{beamer}
+
+\newenvironment{code}{\begin{semiverbatim} \begin{footnotesize}}
+{\end{footnotesize}\end{semiverbatim}}
+
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{hyperref}
+% \usepackage{natbib}
+\usepackage{color}
+\usepackage{pdfsync}
+\usepackage{chancery}
+% \usepackage{movie15}
+\usepackage{pgfpages}
+\usepackage{fancyvrb}
+\usepackage{colortbl}
+\usepackage{listings}
+
+% \definecolor{white}{rgb}{255,255,255}
+% \definecolor{darkred}{rgb}{0.5,0,0}
+% \definecolor{darkgreen}{rgb}{0,0.5,0}
+% \definecolor{lightblue}{rgb}{0,0,0.7}
+
+% \hypersetup{colorlinks,
+%   linkcolor=white,
+%   filecolor=darkred,
+%   urlcolor=lightblue,
+%   citecolor=darkblue}
+
+\usepackage{beamerthemesplit}
+\usetheme{Warsaw}
+\usecolortheme[named=Blue]{structure} 
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[triangle]
+\setbeamertemplate{enumerate items}[default]
+%\setbeameroption{show notes on second screen}
+%\logo{\includegraphics[width = 2cm]{nyulogo.png}}
+
+\newcommand{\R}{\mathbb{R}}
+\renewcommand{\d}{\mathsf{d}}
+\newcommand{\dd}{\partial}
+\newcommand{\E}{\mathsf{E}}
+\newcommand{\bb}{\mathbf}
+
+\title{Machine Learning\\ Capacity and Performance Analysis\\ and R}
+\author{Stephen O'Connell}
+\date{May 3, 2011}
+
+\begin{document} 
+
+\begin{frame}[plain]
+  \titlepage  
+\end{frame}
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}
+	\frametitle{Introduction}
+	\begin{columns}
+        \column{.5\textwidth}
+            Brief Introduction to Machine Learning and Data Mining
+            \begin{itemize}
+                \item What, Why and How
+            \end{itemize}
+            
+            \uncover<2->{How can this be applied to Capacity and Performance Analysis
+            \begin{itemize}
+                \item Data driven
+                \item Patterns
+	            \end{itemize}}
+            
+            \uncover<3->{Example: Utilization Profiling in R
+            \begin{itemize}
+                \item Data Transformation
+                \item Model Construction and Test
+                \item Model Deployment
+            \end{itemize}}
+        \column{.5\textwidth}
+            \uncover<2->{\includegraphics[width=5.5cm]{images/rdcuxsrv277_insidelive_net}}
+	\end{columns}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%
+%% END INTRO
+%%
+
+%%%-------------------------------------------------------------------------------
+% section introduction_to_Machine_learning (end)
+%%%-------------------------------------------------------------------------------
+
+\section{Introduction Machine Learning} % (fold)
+\label{sec:introduction_to_machine_learning}
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Machine Learning: Definition}
+    \alert{There are Many}: Here are a couple
+    \vspace{2mm}
+    \uncover<2->{\begin{block}{Definition: }
+        Tom M. Mitchell provided a widely quoted definition: A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.\cite{wikidef}
+    \end{block}}
+    \uncover<3->{\begin{block}{Definition: }
+The field of machine learning studies the design of computer programs able to induce patterns, regularities, or rules from past experiences. Learner (a computer program) processes data representing past experiences and tries to either develop an appropriate response to future data, or describe in some meaningful way the data seen. \cite{otherdef}
+
+    \end{block}}    
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+  
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}
+	\frametitle{Example: Handwritten Digits }
+	\begin{columns}
+        \column{.5\textwidth}
+   \uncover<1->{{\LARGE Elements of Machine Learning:}}
+    \vspace{2mm}    
+    \begin{itemize}
+    		\uncover<2->{\item {\LARGE {\color{red} Task T}}}
+		       \begin{itemize}
+		   		   \uncover<2->{\item {\large recognizing and classifying handwritten words within images}}
+		           \vspace{2mm}
+				\end{itemize}
+
+    		\uncover<3->{\item {\LARGE {\color{red} Performance P}}}
+		       \begin{itemize}
+		   		   \uncover<3->{\item {\large  percent of words correctly classified}}
+           		   \vspace{2mm}
+				\end{itemize}
+				
+    		\uncover<4->{\item {\LARGE {\color{red} Experience E}}}
+		       \begin{itemize}
+		   		   \uncover<4->{\item {\large a database of handwritten words with given classifications}}
+           		   \vspace{1mm}
+				\end{itemize}		
+
+    \end{itemize}
+    \column{.5\textwidth}
+    \uncover<1->{\includegraphics[width=5.5cm]{images/handwriting}}
+
+	\end{columns}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Methods}
+    \uncover<1->{{\huge Supervised learning\cite{esl}: }}
+    \vspace{2mm}
+    \begin{itemize}
+    		\uncover<2->{\item {\LARGE Use a labeled (known) set of data to build models to perform classification or
+		                           regression}}
+        \vspace{4mm}
+    		\uncover<3->{\item {\LARGE Use the model on new data to make predictions or describe the data}}
+        \vspace{4mm}		
+    		\uncover<4->{\item {\LARGE Supervised algorithms:}}
+		       \begin{itemize}
+		   		   \uncover<4->{\item {\large Linear Regression}}
+           		   \vspace{1mm}
+		   		   \uncover<4->{\item {\large Trees}}
+           		   \vspace{1mm}
+		   		   \uncover<4->{\item {\large Neural Networks}}
+           		   \vspace{1mm}
+		   		   \uncover<4->{\item {\large Support Vector Machines}}
+           		   \vspace{1mm}
+				\end{itemize}		
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Methods}
+    \uncover<1->{{\huge Unsupervised learning\cite{esl}: }}
+    \vspace{2mm}
+    \begin{itemize}
+    		\uncover<2->{\item {\LARGE Find hidden structure in unlabeled (unknown) data}}
+%        \vspace{4mm}
+%    		\uncover<3->{\item {\LARGE }}
+        \vspace{4mm}		
+    		\uncover<3->{\item {\LARGE Unsupervised algorithms:}}
+		       \begin{itemize}
+		   		   \uncover<3->{\item {\large Kmeans}}
+           		   \vspace{1mm}
+		   		   \uncover<3->{\item {\large K Nearest Neighbor}}
+           		   \vspace{1mm}
+		   		   \uncover<3->{\item {\large Hierarchical Clustering}}
+           		   \vspace{1mm}
+		   		   \uncover<3->{\item {\large Association Rules}}
+           		   \vspace{1mm}
+		   		   \uncover<3->{\item {\large Principal Components}}
+           		   \vspace{1mm}
+				\end{itemize}		
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Machine Learning is a Process}
+    
+    {\LARGE Like application development}
+	\begin{columns}
+        \column{.5\textwidth}
+        CRISP-DM, for example\cite{crispdm}:
+            \begin{itemize}
+                \item Business Understanding
+                \item Data Understanding
+                \item Data Preparation
+                \item Modeling
+                \item Evaluation
+                \item Deployment
+                \item REPEAT AS NEEDED
+            \end{itemize}
+            
+        \column{.5\textwidth}
+            \includegraphics[width=5.5cm]{images/Crisp-dmchartnew.pdf}
+	\end{columns}
+
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}
+	\frametitle{Applications}
+	\begin{columns}
+        \column{.5\textwidth}
+            {\LARGE Some notable applications:}
+            \begin{itemize}
+                \uncover<2->{\item Spam Filtering -- Yahoo }
+                \uncover<3->{\item Fraud / Anomaly Detection –- Credit Card }
+                \uncover<4->{\item Stock Predications / Trading Models }
+                \uncover<5->{\item Recommendation - Netflix }
+                \uncover<6->{\item Social Network Analysis -- Facebook }
+                \uncover<7->{\item Internet Search  -- Google }
+            \end{itemize}
+        \column{.5\textwidth}
+            \uncover<2->{\includegraphics[width=2.5cm]{images/yahoo-logo}}
+            \uncover<3->{\includegraphics[width=2.5cm]{images/american_express}}
+            \uncover<4->{\includegraphics[width=2.5cm]{images/BlackRockLogo}}
+            \uncover<5->{\includegraphics[width=2.5cm]{images/netflix-logo}}
+            \uncover<6->{\includegraphics[width=2.5cm]{images/facebook-logo}}
+            \uncover<7->{\includegraphics[width=2.5cm]{images/google_logo}}
+	\end{columns}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}
+	\frametitle{And you can make money!}
+	\begin{columns}
+        \column{.5\textwidth}
+            {\LARGE Data Mining Competitions:}
+            \begin{itemize}
+                \uncover<2->{\item Netflix -- \$1M}
+                \vspace{6mm}
+                \uncover<3->{\item Heritage Health Prize –- \$3M }
+                \vspace{6mm}
+                \uncover<4->{\item Kaggle }
+
+            \end{itemize}
+        \column{.5\textwidth}
+            \vspace{4mm}
+            \uncover<2->{\includegraphics[width=3.5cm]{images/netflix-logo}}
+            \vspace{10mm}
+            \uncover<3->{\includegraphics[width=3.5cm]{images/hh-logo}}
+            \vspace{4mm}
+            \uncover<4->{\includegraphics[width=3.5cm]{images/kaggle-logo}}            
+	\end{columns}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+
+
+%%%-------------------------------------------------------------------------------
+% section CAPACITY AND PERFORMANCE ANALYSIS
+%%%-------------------------------------------------------------------------------
+\section{Capacity and Performance Analysis} % (fold)
+\label{sec:capacity_and_performance_analysis}
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Capacity Planning and Performance Analysis:}
+    \uncover<1->{{\huge A simplified view of capacity planning: }}
+    \vspace{4mm}
+    \begin{itemize}
+    		\uncover<2->{\item {\LARGE Hourly and Daily, Monday thru Friday stats}}
+        \vspace{4mm}
+    		\uncover<3->{\item {\LARGE Peak and Average Daily Utilization}}
+        \vspace{4mm}		
+    		\uncover<4->{\item {\LARGE Simple linear regression on peak and average utilization}}
+		\vspace{4mm}
+    		\uncover<5->{\item {\LARGE Extrapolate 30-60-90-180 days into the future.}}
+		\vspace{4mm}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Capacity Planning -- Simplified View:}
+    \uncover<1->{\includegraphics[width=10.5cm]{images/rdcuxsrv277_insidelive_net}}
+     \newline
+     {\scriptsize  * One page Server Utilization, Forecast, and Configuration developed using R}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Capacity Planning -- Simplified View:}
+    {\LARGE Put all forecasts into a spreadsheet and sort by 30, 60, 90, or 180 forecast to find
+            top Utilized servers }
+    \uncover<1->{\includegraphics[width=10.5cm]{images/spreadsheet_view}}
+     \newline
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Capacity Planning -- Simplified View:}
+        \begin{itemize}    
+    		\uncover<1->{\item {\LARGE Works well for stable business applications and environments.}}
+		\vspace{3mm}
+    		\uncover<2->{\item {\LARGE With 30-40-50 servers capacity planning for critical servers is straight forward.}}		
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Capacity Planning -- Real world}
+    \begin{itemize}
+        \vspace{3mm}
+    		\uncover<1->{\item {\LARGE With 3k-4k-5k-+10k servers capacity planning is very difficult.}}
+        \vspace{2mm}		
+        \uncover<2->{\item {\LARGE Why?}}
+         \begin{itemize}
+		   \uncover<3->{\item {\large Many different environments, Production, Test, BCP, QA}}
+           \vspace{2mm}
+		   \uncover<4->{\item {\large Many different applications: database, web server, Quant, Hadoop, etc.}}
+		   \vspace{2mm}
+		   \uncover<5->{\item {\large Many different hardware platforms: Unix, Linux, Windows, VMWare, etc.}}
+		   \vspace{2mm}		   
+		\end{itemize}
+
+    		\uncover<6->{\item {\LARGE Things are not stable and well formed -- different 
+		                           applications have different utilization profiles, for different reasons.}}
+		\vspace{3mm}
+    		\uncover<7->{\item {\LARGE Exceptions occur }}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{How can Machine Learning help?}
+    \begin{itemize}
+    		\uncover<1->{\item {\LARGE Lots and lots of data}}
+		\begin{itemize}
+		   		\uncover<1->{\item {\large System have many different components and
+		   	each component has its own function and collection of 
+		                   metrics that determine performance}}
+           		\vspace{2mm}
+		   		\uncover<1->{\item {\large No problem is in isolation, there are many
+		   different sets of data that need to be correlated }}
+		                       \vspace{2mm}
+				\end{itemize}
+        	\vspace{3mm}		
+    		\uncover<2->{\item {\LARGE Many different relationships server, storage, 
+		                   database, application...}}
+			\vspace{3mm}
+    		\uncover<3->{\item {\LARGE Lots of historical data (Capacity Database?)}}
+			\vspace{3mm}
+    		\uncover<4->{\item {\LARGE Many repeating and familiar patterns}}
+    		
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{How can Machine Learning help?}
+    
+    \uncover<1->{{\huge Elements of Machine Learning:}}
+    \vspace{4mm}    
+    \begin{itemize}
+    		\uncover<2->{\item {\LARGE {\color{red} Task T}}}
+		       \begin{itemize}
+		   		   \uncover<2->{\item {\large Classify resource utilization/performance}}
+		           \vspace{4mm}
+				\end{itemize}
+
+    		\uncover<3->{\item {\LARGE {\color{red} Performance P}}}
+		       \begin{itemize}
+		   		   \uncover<3->{\item {\large Filtered list of key utilization classes}}
+           		   \vspace{2mm}
+		   		   \uncover<3->{\item {\large Enhanced Monitoring}}
+		           \vspace{2mm}
+		   		   \uncover<3->{\item {\large Smart Alerting}}
+		           \vspace{4mm}		           
+				\end{itemize}
+				
+    		\uncover<4->{\item {\LARGE {\color{red} Experience E}}}
+		       \begin{itemize}
+		   		   \uncover<4->{\item {\large Historical data from a capacity database}}
+           		   \vspace{1mm}
+				\end{itemize}		
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Utilization Patterns}
+    \begin{itemize}
+    		\uncover<1->{\item {\LARGE Resource Utilization have patterns}}
+        \vspace{3mm}
+    		\uncover<2->{\item {\LARGE They are visual clues as to performance and future utilization}}
+        \vspace{3mm}		
+    		\uncover<3->{\item {\LARGE These patterns can be grouped:}}
+		\begin{itemize}
+		   \uncover<4->{\item {\large {\color{red} Normal} -- A flat utilization, stable environment, could be 
+		                              either consistently high/middle/low in its utilization.}}
+           \vspace{2mm}
+		   \uncover<5->{\item {\large {\color{red} Cyclic} -- Highly variable workload, maybe some consistency 
+		                              like month-end or quant load.}}
+		   \vspace{2mm}
+		   \uncover<6->{\item {\large {\color{red} Trend Increasing} -- Organic growth in the utilization.}}
+		   \vspace{2mm}		                              
+		   \uncover<7->{\item {\large {\color{red} Trend Decreasing} -- Reduced workload, application retirement.}}
+		   \vspace{2mm}		                              
+		   \uncover<8->{\item {\large {\color{red} Shift Upward} -- Sharp increase in processing, could be related to 
+		                              “broken” processes, cluster failover to stand-by server, and/or 
+		                              new application deployment.}}
+		   \vspace{2mm}		                              
+		   \uncover<9->{\item {\large {\color{red} Shift Downward} -- Sharp decrease in processing, could be related to fixing 
+		                              processes, fail-back, or application retirement.}}
+		   
+		\end{itemize}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Utilization Patterns}
+    \begin{center}
+          \includegraphics[width=10cm]{images/util-patterns}
+    \end{center}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%-------------------------------------------------------------------------------
+% section R Example
+%%%-------------------------------------------------------------------------------
+\section{R Example} % (fold)
+\label{sec:r_example}
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{What is R?}
+    \begin{itemize}
+    		\uncover<1->{\item {\LARGE Open source statistical programming language}}
+        \vspace{3mm}
+    		\uncover<2->{\item {\LARGE Great visualization packages}}
+        \vspace{3mm}		
+    		\uncover<3->{\item {\LARGE Many different modeling packages}}
+		\vspace{3mm}
+    		\uncover<4->{\item {\LARGE Many different machine learning packages}}
+		\vspace{3mm}
+    		\uncover<5->{\item {\LARGE Almost a complete solution for building machine learning 
+		                           tools -- scaling is an issue, i.e. the problem has to fit in memory.}}
+		\vspace{3mm}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Support Vector Machine}
+    \begin{center}
+          \includegraphics[width=10cm]{images/svm}
+    \end{center}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Data Considerations}
+    \begin{itemize}
+    		\item {\LARGE Performance and Utilization data is time series}
+  \begin{lstlisting}[language=R]
+  DateTime     Server        AverageCPU
+  2011-05-01   webserver     95
+  2011-05-02   webserver     90
+  2011-05-03   webserver     85
+  2011-05-04   webserver     95
+  2011-05-05   webserver     94  
+  \end{lstlisting}
+        \vspace{3mm}
+        
+    		\item {\LARGE ML data format is a matrix with the general form Y, X1, X2,...Xn}
+        \vspace{3mm}		
+        
+    		\item {\LARGE Need to convert time series to matrix }
+		
+  \begin{lstlisting}[language=R]
+  Y           X1   X2  X3  X4  X5
+  webserver   95   90  85  95  94
+	  \end{lstlisting}
+		
+		\vspace{3mm}
+    		\item {\LARGE Data needs to be consistent and well formed, no missing or bad data}
+		\vspace{3mm}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{SVM Demonstration}
+    \begin{itemize}
+    		\item {\LARGE Data is generated, \texttt{prototypes.R}}
+        \vspace{3mm}
+    		\item {\LARGE \texttt{helperFunctions.R}}
+		    \begin{itemize}
+		       \item {\large \texttt{createData}}
+		       \item {\large \texttt{confusionM}}
+		       \item {\large \texttt{printMissClassified}}		       		       
+		    \end{itemize}
+        \vspace{3mm}		        
+    		\item {\LARGE \texttt{demo\_1.R} Builds an initial SVM model, tunes the 
+		                model and classifies new data with the model}
+		\vspace{3mm}
+    		\item {\LARGE \texttt{demo\_2.R} Improves the accuracy of the initial model }
+		\vspace{3mm}
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Generated Data}
+    \begin{center}
+          \includegraphics[width=8cm]{images/W-7}
+    \end{center}
+    \begin{itemize}
+		\item {\small  Datasets contain 100 of each type of pattern, i.e. 600 servers}
+		\item {\small There are 130 X data points/features representing 180 days, Monday thru Friday}
+		\item {\small Randomly generated...}		       		       
+	\end{itemize}
+
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{First Predictive Model}
+    \alert<1>{Create the first model}
+    \scriptsize{\begin{lstlisting}[language=R]
+###--------------------------------  OUT OF THE BOX -----------------------------
+## GET DATA
+Ynew <- dget("Y_7")
+data <- createData(Ynew)
+
+## SPLIT TO x and Y
+x <- subset(data, select = -class)
+y <- data$class
+
+## BUILD MODEL
+model <- svm(class ~ ., data = data)
+summary(model)
+
+Call:
+svm(formula = class ~ ., data = data)
+
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  1 
+      gamma:  0.007692308 
+
+Number of Support Vectors:  545
+ ( 95 100 89 80 88 93 )
+
+Number of Classes:  6 
+
+Levels: 
+ Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{First Predictive Model}
+    \alert<1>{Check the models accuracy}
+    \scriptsize{\begin{lstlisting}[language=R]
+> ## PREDICTIONS
+pred <- predict(model, x)
+
+# CHECK ACCURACY:
+confusionM(pred, y)
+
+Predicted Values:
+Yp
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+       94       109        90        92       108       107 
+Y values:
+Y
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      100       100       100       100       100       100 
+Confusion Matrix:
+           Yp
+Y           Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+  Cyclic        90     10         0       0         0       0
+  Normal         2     98         0       0         0       0
+  ShiftDown      2      0        90       0         8       0
+  ShiftUp        0      1         0      91         0       8
+  TrendDown      0      0         0       0       100       0
+  TrendUp        0      0         0       1         0      99
+Accuracy =  0.9466667[1] 0.9466667    
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{First Predictive Model}
+    \alert<1>{Model Tuning:}
+    \scriptsize{\begin{lstlisting}[language=R]
+> obj <- tune.svm(class~., data = data, gamma = 2^(-1:1), cost = 2^(2:4))
+> summary(obj)
+
+Parameter tuning of ‘svm’:
+
+- sampling method: 10-fold cross validation 
+
+- best parameters:
+ gamma cost
+   0.5    4
+
+- best performance: 0.8883333 
+
+- Detailed performance results:
+  gamma cost     error dispersion
+1   0.5    4 0.8883333 0.03604695
+2   1.0    4 0.9000000 0.03142697
+3   2.0    4 0.9000000 0.03142697
+4   0.5    8 0.8883333 0.03604695
+5   1.0    8 0.9000000 0.03142697
+6   2.0    8 0.9000000 0.03142697
+7   0.5   16 0.8883333 0.03604695
+8   1.0   16 0.9000000 0.03142697
+9   2.0   16 0.9000000 0.03142697    
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{First Predictive Model}
+    \alert<1>{Re-run the training data with tuned parameters}
+    \scriptsize{\begin{lstlisting}[language=R]
+
+> ###--------------------------------  AFTER TUNING -----------------------------
+## NEW MODEL WITH COST AND GAMMA
+model <- svm(class ~ ., data = data, cost=2.25, gamma=.01)
+
+## RE-DO THE PREDICTION
+pred <- predict(model, x)
+
+# CHECK ACCURACY
+confusionM(pred, y)
+
+Predicted Values:
+Yp
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+       98       102        98        98       102       102 
+Y values:
+Y
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      100       100       100       100       100       100 
+Confusion Matrix:
+           Yp
+Y           Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+  Cyclic        98      2         0       0         0       0
+  Normal         0    100         0       0         0       0
+  ShiftDown      0      0        98       0         2       0
+  ShiftUp        0      0         0      98         0       2
+  TrendDown      0      0         0       0       100       0
+  TrendUp        0      0         0       0         0     100
+Accuracy =  0.99[1] 0.99
+
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{First Predictive Model}
+    \alert<1>{Missclassification Analysis}
+    \scriptsize{\begin{lstlisting}[language=R]
+> printMissClassified(pred, y)
+
+  Predicted    Actual observation
+1    Normal    Cyclic         156
+2    Normal    Cyclic         177
+3   TrendUp   ShiftUp         423
+4   TrendUp   ShiftUp         452
+5 TrendDown ShiftDown         553
+6 TrendDown ShiftDown         586
+
+> plot(t(data[156,2:131]), type='l',main="Debug",ylab="%util", ylim=c(0,100))    
+    \end{lstlisting}}
+    \begin{center}
+          \includegraphics[width=8cm]{images/debug-chart}
+    \end{center}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{First Predictive Model}
+    \alert<1>{Use the model to classify new data}
+    \scriptsize{\begin{lstlisting}[language=R]
+###--------------------------------  NEW DATA  -----------------------------
+## READ IN DATA THAT MODEL HAS NOT SEEN
+Ynew <- dget("Y_6")
+data <- createData(Ynew)
+## SPLIT TO X and Y
+x <- subset(data, select = -class)
+y <- data$class
+## PREDICT CLASS USING PREVIOUSLY CREATED MODEL
+pred <- predict(model, x)
+
+# CHECK ACCURACY
+confusionM(pred, y)
+Predicted Values:
+Yp
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+       96       107        99        86       102       110 
+Y values:
+Y
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      100       100       100       100       100       100 
+Confusion Matrix:
+           Yp
+Y           Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+  Cyclic        69     23         6       0         2       0
+  Normal        20     80         0       0         0       0
+  ShiftDown      5      0        85       0        10       0
+  ShiftUp        0      4         0      77         0      19
+  TrendDown      2      0         8       0        90       0
+  TrendUp        0      0         0       9         0      91
+Accuracy =  0.82[1] 0.82    
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{How Can we improve on these results?}
+    \begin{itemize}
+    		\uncover<1->{\item {\LARGE More tuning of the cost and gamma parameters?}}
+        \vspace{3mm}
+    		\uncover<2->{\item {\LARGE Is the data representative of the real world?}}
+        \vspace{3mm}		
+    		\uncover<3->{\item {\LARGE More training data in the model?}}
+		\vspace{3mm}
+    		\uncover<4->{\item {\LARGE Less training data in the model?}}
+		\vspace{3mm}
+    		\uncover<5->{\item {\LARGE Model overfitting?}}
+		\vspace{3mm}		
+    		\uncover<6->{\item {\LARGE Are we using the right algorithm, the right way?}}
+		\vspace{3mm}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Improved Predictive Model}
+    \alert<1>{Add more data to the Model Build}
+    \scriptsize{\begin{lstlisting}[language=R]
+> ###--------------------------------  OUT OF THE BOX -----------------------------
+##  ADD MORE DATA TO THE MODEL BUILD
+Ynew <- dget("Y_7")
+d <- createData(Ynew)
+data <- d
+Ynew <- dget("Y_5")
+d <- createData(Ynew)
+data <- rbind(data, d)
+Ynew <- dget("Y_4")
+d <- createData(Ynew)
+data <- rbind(data, d)
+Ynew <- dget("Y_3")
+d <- createData(Ynew)
+data <- rbind(data, d)
+Ynew <- dget("Y_2")
+d <- createData(Ynew)
+data <- rbind(data, d)
+Ynew <- dget("Y_1")
+d <- createData(Ynew)
+data <- rbind(data, d)
+
+## SPLIT TO x and Y
+x <- subset(data, select = -class)
+y <- data$class
+    
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Improved Predictive Model}
+    \alert<1>{Add more data to the Model Build, cont.}
+    \scriptsize{\begin{lstlisting}[language=R]
+> ## BUILD MODEL
+model <- svm(class ~ ., data = data)
+summary(model)
+
+
+Call:
+svm(formula = class ~ ., data = data)
+
+
+Parameters:
+   SVM-Type:  C-classification 
+ SVM-Kernel:  radial 
+       cost:  1 
+      gamma:  0.007692308 
+
+Number of Support Vectors:  2475
+
+ ( 479 550 361 346 374 365 )
+
+
+Number of Classes:  6 
+
+Levels: 
+ Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+    
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Improved Predictive Model}
+    \alert<1>{Add more data to the Model Build, cont.}
+    \scriptsize{\begin{lstlisting}[language=R]
+> ## PREDICTIONS
+pred <- predict(model, x)
+
+# CHECK ACCURACY:
+confusionM(pred, y)
+
+Predicted Values:
+Yp
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      576       627       580       582       619       616 
+Y values:
+Y
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      600       600       600       600       600       600 
+Confusion Matrix:
+           Yp
+Y           Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+  Cyclic       529     61         4       0         6       0
+  Normal        37    563         0       0         0       0
+  ShiftDown      8      1       566       0        25       0
+  ShiftUp        0      2         0     576         0      22
+  TrendDown      2      0        10       0       588       0
+  TrendUp        0      0         0       6         0     594
+Accuracy =  0.9488889[1] 0.9488889
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Improved Predictive Model}
+    \alert<1>{Tune the new model}
+    \scriptsize{\begin{lstlisting}[language=R]
+> ###--------------------------------  AFTER TUNING -----------------------------
+## NEW MODEL WITH COST AND GAMMA
+model <- svm(class ~ ., data = data, cost=2.25, gamma=.01)
+
+## RE-DO THE PREDICTION
+pred <- predict(model, x)
+
+# CHECK ACCURACY
+confusionM(pred, y)
+Predicted Values:
+Yp
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      568       626       596       594       610       606 
+Y values:
+Y
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      600       600       600       600       600       600 
+Confusion Matrix:
+           Yp
+Y           Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+  Cyclic       566     28         3       0         3       0
+  Normal         2    598         0       0         0       0
+  ShiftDown      0      0       593       0         7       0
+  ShiftUp        0      0         0     593         0       7
+  TrendDown      0      0         0       0       600       0
+  TrendUp        0      0         0       1         0     599
+Accuracy =  0.9858333[1] 0.9858333
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Improved Predictive Model}
+    \alert<1>{Use the new model to classify new data}
+    \scriptsize{\begin{lstlisting}[language=R]
+> ###--------------------------------  NEW DATA  -----------------------------
+## READ IN DATA THAT MODEL HAS NOT SEEN
+Ynew <- dget("Y_6")
+data <- createData(Ynew)
+## SPLIT TO X and Y
+x <- subset(data, select = -class)
+y <- data$class
+## PREDICT CLASS USING PREVIOUSLY CREATED MODEL
+pred <- predict(model, x)
+
+# CHECK ACCURACY
+confusionM(pred, y)
+Predicted Values:
+Yp
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+       84       114        95        93       109       105 
+Y values:
+Y
+   Cyclic    Normal ShiftDown   ShiftUp TrendDown   TrendUp 
+      100       100       100       100       100       100 
+Confusion Matrix:
+           Yp
+Y           Cyclic Normal ShiftDown ShiftUp TrendDown TrendUp
+  Cyclic        72     22         3       0         3       0
+  Normal        10     90         0       0         0       0
+  ShiftDown      2      0        89       0         9       0
+  ShiftUp        0      2         0      88         0      10
+  TrendDown      0      0         3       0        97       0
+  TrendUp        0      0         0       5         0      95
+Accuracy =  0.885[1] 0.885    
+    \end{lstlisting}}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%--------------------- START FRAME ------------------------------
+\begin{frame}[fragile]
+    \frametitle{Model Deployment Considerations}
+    \begin{itemize}
+    		\uncover<1->{\item {\large Need to create the training data from "real" data; lots of labeling required.}}
+        \vspace{3mm}    
+    		\uncover<2->{\item {\large Patterns and labeling need to be consistent with objectives.}}
+        \vspace{3mm}            
+    		\uncover<3->{\item {\large Training data and "New" data need to be well formed, and consistent.}}
+        \vspace{3mm}
+    		\uncover<4->{\item {\large Need to consider rare observations: anomaly detection.}}
+        \vspace{3mm}        
+    		\uncover<5->{\item {\large Experimentation is required; no one best solution.  There are always trade-offs.}}
+        \vspace{3mm}		        
+    		\uncover<6->{\item {\large Continually monitor model performance: is the real world drifting?}}
+        \vspace{3mm}		
+    		\uncover<7->{\item {\large Need to have model measurement and validation processes.}}
+		\vspace{3mm}
+    		\uncover<8->{\item {\large Change control of a new model, what, why and how.}}
+		\vspace{3mm}
+    		\uncover<9->{\item {\large Models are guides, not the answer.}}
+		\vspace{3mm}		
+%  		\uncover<6->{\item {\large Are we using the right algorithm, the right way?}}
+%		\vspace{3mm}
+
+\end{itemize}
+\end{frame}
+%%%----------------------- END FRAME ---------------------------------
+
+%%%-------------------------------------------------------------------------------
+% section introduction_to_Machine_learning (end)
+%%%-------------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{Thank You!}
+    \begin{tabular}{ll}
+        E-mail: & sao@saoconnell.com \\
+        Phone:  & 925-330-4350
+    \end{tabular}
+    \vspace{2cm} \\
+    Example code and slides available: ??
+\end{frame}
+
+
+%%%--------------------------------------------------------------------------
+%%%   REFERENCES
+%%%--------------------------------------------------------------------------
+\begin{frame}[fragile]
+    \frametitle{References:}
+    \begin{thebibliography}{99}
+        \bibitem[1]{wikidef} Wikipedia \url{http://en.wikipedia.org/wiki/Machine_learning\#Definition}
+        \bibitem[2]{otherdef}  Vucetic, Slobodan \url{http://www.ist.temple.edu/~vucetic/cis526fall2003/lecture1.pdf}
+        \bibitem[3]{crispdm}  CRoss Industry Standard Process for Data Mining 
+                              \url{http://www.crisp-dm.org/Process/index.htm}
+        \bibitem[4]{esl} Trevor Hastie, Robert Tibshirani, Jerome Friedman,  
+" The Elements of 
+Statistical Learning:
+
+Data Mining, Inference, and Prediction."
+    \end{thebibliography}
+\end{frame}
+
+
+\end{document}
